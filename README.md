@@ -1,16 +1,51 @@
-# dart_vader_notes
+# Dart Vader Notes 🌑
 
-A new Flutter project.
+A premium, secure, and beautiful offline-first note-taking application built with Flutter.
 
-## Getting Started
+> **"I vibe coded this."** ✨
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+*   **Secure Notes**: Lock your private thoughts with a PIN.
+*   **Privacy First**: Locked notes are blurred in the list view.
+*   **Material 3 Design**: Stunning UI with support for dynamic theming.
+*   **Dark Mode**: Native dark mode support with persistence.
+*   **Offline First**: Built on Isar Database for lightning-fast performance.
+*   **Search**: Instant full-text search for your notes.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Tech Stack
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+*   **Framework**: Flutter
+*   **Language**: Dart
+*   **State Management**: Riverpod
+*   **Database**: Isar (NoSQL)
+*   **Navigation**: GoRouter
+*   **Code Generation**: Freezed, JsonSerializable
+
+## 🚀 Getting Started
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/quvoid/NotepadVibeCoded.git
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    flutter pub get
+    ```
+
+3.  **Run the app**:
+    ```bash
+    flutter run
+    ```
+
+## 🔐 Security
+
+To use the private notes feature:
+1.  Go to **Settings**.
+2.  Tap **Security PIN** to set a 4-digit PIN.
+3.  Create a note and toggle the **Private** switch.
+
+---
+
+Built with ❤️ and ☕ by [Quvoid](https://github.com/quvoid).
