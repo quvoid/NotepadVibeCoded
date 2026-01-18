@@ -12,6 +12,7 @@ _$NoteImpl _$$NoteImplFromJson(Map<String, dynamic> json) => _$NoteImpl(
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      isLocked: json['isLocked'] as bool? ?? false,
       colorHex: json['colorHex'] as String? ?? '0xFFFFFFFF',
     );
 
@@ -22,5 +23,6 @@ Map<String, dynamic> _$$NoteImplToJson(_$NoteImpl instance) =>
       'content': instance.content,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
+      'isLocked': instance.isLocked,
       'colorHex': instance.colorHex,
     };

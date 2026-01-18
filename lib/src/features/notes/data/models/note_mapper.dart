@@ -9,6 +9,7 @@ extension NoteModelToEntity on NoteModel {
       content: content,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      isLocked: isLocked,
       colorHex: colorHex,
     );
   }
@@ -22,6 +23,7 @@ extension NoteEntityToModel on Note {
       ..content = content
       ..createdAt = createdAt
       ..updatedAt = updatedAt
+      ..isLocked = isLocked
       ..colorHex = colorHex;
   }
 }

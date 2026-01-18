@@ -24,7 +24,8 @@ mixin _$Note {
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime get updatedAt =>
+  DateTime get updatedAt => throw _privateConstructorUsedError;
+  bool get isLocked =>
       throw _privateConstructorUsedError; // Hex string for color
   String get colorHex => throw _privateConstructorUsedError;
 
@@ -44,6 +45,7 @@ abstract class $NoteCopyWith<$Res> {
       String content,
       DateTime createdAt,
       DateTime updatedAt,
+      bool isLocked,
       String colorHex});
 }
 
@@ -65,6 +67,7 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
     Object? content = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? isLocked = null,
     Object? colorHex = null,
   }) {
     return _then(_value.copyWith(
@@ -88,6 +91,10 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLocked: null == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool,
       colorHex: null == colorHex
           ? _value.colorHex
           : colorHex // ignore: cast_nullable_to_non_nullable
@@ -109,6 +116,7 @@ abstract class _$$NoteImplCopyWith<$Res> implements $NoteCopyWith<$Res> {
       String content,
       DateTime createdAt,
       DateTime updatedAt,
+      bool isLocked,
       String colorHex});
 }
 
@@ -127,6 +135,7 @@ class __$$NoteImplCopyWithImpl<$Res>
     Object? content = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? isLocked = null,
     Object? colorHex = null,
   }) {
     return _then(_$NoteImpl(
@@ -150,6 +159,10 @@ class __$$NoteImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLocked: null == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool,
       colorHex: null == colorHex
           ? _value.colorHex
           : colorHex // ignore: cast_nullable_to_non_nullable
@@ -167,6 +180,7 @@ class _$NoteImpl implements _Note {
       required this.content,
       required this.createdAt,
       required this.updatedAt,
+      this.isLocked = false,
       this.colorHex = '0xFFFFFFFF'});
 
   factory _$NoteImpl.fromJson(Map<String, dynamic> json) =>
@@ -182,6 +196,9 @@ class _$NoteImpl implements _Note {
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
+  @override
+  @JsonKey()
+  final bool isLocked;
 // Hex string for color
   @override
   @JsonKey()
@@ -189,7 +206,7 @@ class _$NoteImpl implements _Note {
 
   @override
   String toString() {
-    return 'Note(id: $id, title: $title, content: $content, createdAt: $createdAt, updatedAt: $updatedAt, colorHex: $colorHex)';
+    return 'Note(id: $id, title: $title, content: $content, createdAt: $createdAt, updatedAt: $updatedAt, isLocked: $isLocked, colorHex: $colorHex)';
   }
 
   @override
@@ -204,14 +221,16 @@ class _$NoteImpl implements _Note {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
             (identical(other.colorHex, colorHex) ||
                 other.colorHex == colorHex));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, title, content, createdAt, updatedAt, colorHex);
+  int get hashCode => Object.hash(runtimeType, id, title, content, createdAt,
+      updatedAt, isLocked, colorHex);
 
   @JsonKey(ignore: true)
   @override
@@ -234,6 +253,7 @@ abstract class _Note implements Note {
       required final String content,
       required final DateTime createdAt,
       required final DateTime updatedAt,
+      final bool isLocked,
       final String colorHex}) = _$NoteImpl;
 
   factory _Note.fromJson(Map<String, dynamic> json) = _$NoteImpl.fromJson;
@@ -248,6 +268,8 @@ abstract class _Note implements Note {
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
+  @override
+  bool get isLocked;
   @override // Hex string for color
   String get colorHex;
   @override

@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_vader_notes/src/core/utils/constants.dart';
 import 'package:dart_vader_notes/src/features/notes/domain/entities/note.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/providers/note_providers.dart';
+import 'package:dart_vader_notes/src/features/settings/data/pin_service.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
   final String noteId;
@@ -20,6 +21,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
   late TextEditingController _contentController;
   Note? _existingNote;
   bool _isLoading = true;
+  bool _isLocked = false;
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             _existingNote = note;
             _titleController.text = note.title;
             _contentController.text = note.content;
+            _isLocked = note.isLocked;
           }
           setState(() => _isLoading = false);
         }
@@ -66,11 +69,13 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     final note = _existingNote?.copyWith(
       title: title,
       content: content,
+      isLocked: _isLocked,
       updatedAt: DateTime.now(),
     ) ?? Note(
       id: const Uuid().v4(),
       title: title,
       content: content,
+      isLocked: _isLocked,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -107,6 +112,33 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
           ),
           const SizedBox(width: 8),
         ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const Text('Private', style: TextStyle(fontSize: 16)),
+            Switch(
+              value: _isLocked,
+              onChanged: (val) {
+                if (val) {
+                   final pinService = ref.read(pinServiceProvider);
+                   if (!pinService.hasPin) {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: const Text('Please set a PIN in Settings first'),
+                         action: SnackBarAction(
+                           label: 'Settings',
+                           onPressed: () => context.push('/settings'),
+                         ),
+                       ),
+                     );
+                     return;
+                   }
+                }
+                setState(() => _isLocked = val);
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -141,6 +173,20 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          _saveNote();
+          // Show small snackbar or just pop
+          if (mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Note Saved'), duration: Duration(seconds: 1)),
+             );
+             context.pop();
+          }
+        },
+        label: const Text('Save'),
+        icon: const Icon(Icons.check),
       ),
     );
   }

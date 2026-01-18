@@ -11,6 +11,7 @@ class Note with _$Note {
     required String content,
     required DateTime createdAt,
     required DateTime updatedAt,
+    @Default(false) bool isLocked,
     // Hex string for color
     @Default('0xFFFFFFFF') String colorHex, 
   }) = _Note;

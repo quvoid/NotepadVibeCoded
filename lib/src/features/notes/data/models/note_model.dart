@@ -19,5 +19,7 @@ class NoteModel {
   @Index()
   late DateTime updatedAt;
 
+  bool isLocked = false;
+
   late String colorHex;
 }
