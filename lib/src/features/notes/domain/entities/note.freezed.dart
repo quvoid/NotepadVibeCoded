@@ -27,7 +27,16 @@ mixin _$Note {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   bool get isLocked =>
       throw _privateConstructorUsedError; // Hex string for color
-  String get colorHex => throw _privateConstructorUsedError;
+  String get colorHex =>
+      throw _privateConstructorUsedError; // New feature fields
+  bool get isPinned => throw _privateConstructorUsedError;
+  bool get isDeleted => throw _privateConstructorUsedError;
+  DateTime? get deletedAt => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
+  bool get isChecklist => throw _privateConstructorUsedError;
+  List<ChecklistItem> get checklistItems => throw _privateConstructorUsedError;
+  DateTime? get reminderAt => throw _privateConstructorUsedError;
+  String get contentType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -46,7 +55,15 @@ abstract class $NoteCopyWith<$Res> {
       DateTime createdAt,
       DateTime updatedAt,
       bool isLocked,
-      String colorHex});
+      String colorHex,
+      bool isPinned,
+      bool isDeleted,
+      DateTime? deletedAt,
+      List<String> tags,
+      bool isChecklist,
+      List<ChecklistItem> checklistItems,
+      DateTime? reminderAt,
+      String contentType});
 }
 
 /// @nodoc
@@ -69,6 +86,14 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
     Object? updatedAt = null,
     Object? isLocked = null,
     Object? colorHex = null,
+    Object? isPinned = null,
+    Object? isDeleted = null,
+    Object? deletedAt = freezed,
+    Object? tags = null,
+    Object? isChecklist = null,
+    Object? checklistItems = null,
+    Object? reminderAt = freezed,
+    Object? contentType = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -99,6 +124,38 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
           ? _value.colorHex
           : colorHex // ignore: cast_nullable_to_non_nullable
               as String,
+      isPinned: null == isPinned
+          ? _value.isPinned
+          : isPinned // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      tags: null == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      isChecklist: null == isChecklist
+          ? _value.isChecklist
+          : isChecklist // ignore: cast_nullable_to_non_nullable
+              as bool,
+      checklistItems: null == checklistItems
+          ? _value.checklistItems
+          : checklistItems // ignore: cast_nullable_to_non_nullable
+              as List<ChecklistItem>,
+      reminderAt: freezed == reminderAt
+          ? _value.reminderAt
+          : reminderAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      contentType: null == contentType
+          ? _value.contentType
+          : contentType // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -117,7 +174,15 @@ abstract class _$$NoteImplCopyWith<$Res> implements $NoteCopyWith<$Res> {
       DateTime createdAt,
       DateTime updatedAt,
       bool isLocked,
-      String colorHex});
+      String colorHex,
+      bool isPinned,
+      bool isDeleted,
+      DateTime? deletedAt,
+      List<String> tags,
+      bool isChecklist,
+      List<ChecklistItem> checklistItems,
+      DateTime? reminderAt,
+      String contentType});
 }
 
 /// @nodoc
@@ -137,6 +202,14 @@ class __$$NoteImplCopyWithImpl<$Res>
     Object? updatedAt = null,
     Object? isLocked = null,
     Object? colorHex = null,
+    Object? isPinned = null,
+    Object? isDeleted = null,
+    Object? deletedAt = freezed,
+    Object? tags = null,
+    Object? isChecklist = null,
+    Object? checklistItems = null,
+    Object? reminderAt = freezed,
+    Object? contentType = null,
   }) {
     return _then(_$NoteImpl(
       id: null == id
@@ -167,6 +240,38 @@ class __$$NoteImplCopyWithImpl<$Res>
           ? _value.colorHex
           : colorHex // ignore: cast_nullable_to_non_nullable
               as String,
+      isPinned: null == isPinned
+          ? _value.isPinned
+          : isPinned // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      tags: null == tags
+          ? _value._tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      isChecklist: null == isChecklist
+          ? _value.isChecklist
+          : isChecklist // ignore: cast_nullable_to_non_nullable
+              as bool,
+      checklistItems: null == checklistItems
+          ? _value._checklistItems
+          : checklistItems // ignore: cast_nullable_to_non_nullable
+              as List<ChecklistItem>,
+      reminderAt: freezed == reminderAt
+          ? _value.reminderAt
+          : reminderAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      contentType: null == contentType
+          ? _value.contentType
+          : contentType // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -181,7 +286,17 @@ class _$NoteImpl implements _Note {
       required this.createdAt,
       required this.updatedAt,
       this.isLocked = false,
-      this.colorHex = '0xFFFFFFFF'});
+      this.colorHex = '0xFFFFFFFF',
+      this.isPinned = false,
+      this.isDeleted = false,
+      this.deletedAt,
+      final List<String> tags = const [],
+      this.isChecklist = false,
+      final List<ChecklistItem> checklistItems = const [],
+      this.reminderAt,
+      this.contentType = 'plain'})
+      : _tags = tags,
+        _checklistItems = checklistItems;
 
   factory _$NoteImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoteImplFromJson(json);
@@ -203,10 +318,45 @@ class _$NoteImpl implements _Note {
   @override
   @JsonKey()
   final String colorHex;
+// New feature fields
+  @override
+  @JsonKey()
+  final bool isPinned;
+  @override
+  @JsonKey()
+  final bool isDeleted;
+  @override
+  final DateTime? deletedAt;
+  final List<String> _tags;
+  @override
+  @JsonKey()
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tags);
+  }
+
+  @override
+  @JsonKey()
+  final bool isChecklist;
+  final List<ChecklistItem> _checklistItems;
+  @override
+  @JsonKey()
+  List<ChecklistItem> get checklistItems {
+    if (_checklistItems is EqualUnmodifiableListView) return _checklistItems;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_checklistItems);
+  }
+
+  @override
+  final DateTime? reminderAt;
+  @override
+  @JsonKey()
+  final String contentType;
 
   @override
   String toString() {
-    return 'Note(id: $id, title: $title, content: $content, createdAt: $createdAt, updatedAt: $updatedAt, isLocked: $isLocked, colorHex: $colorHex)';
+    return 'Note(id: $id, title: $title, content: $content, createdAt: $createdAt, updatedAt: $updatedAt, isLocked: $isLocked, colorHex: $colorHex, isPinned: $isPinned, isDeleted: $isDeleted, deletedAt: $deletedAt, tags: $tags, isChecklist: $isChecklist, checklistItems: $checklistItems, reminderAt: $reminderAt, contentType: $contentType)';
   }
 
   @override
@@ -224,13 +374,43 @@ class _$NoteImpl implements _Note {
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked) &&
             (identical(other.colorHex, colorHex) ||
-                other.colorHex == colorHex));
+                other.colorHex == colorHex) &&
+            (identical(other.isPinned, isPinned) ||
+                other.isPinned == isPinned) &&
+            (identical(other.isDeleted, isDeleted) ||
+                other.isDeleted == isDeleted) &&
+            (identical(other.deletedAt, deletedAt) ||
+                other.deletedAt == deletedAt) &&
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.isChecklist, isChecklist) ||
+                other.isChecklist == isChecklist) &&
+            const DeepCollectionEquality()
+                .equals(other._checklistItems, _checklistItems) &&
+            (identical(other.reminderAt, reminderAt) ||
+                other.reminderAt == reminderAt) &&
+            (identical(other.contentType, contentType) ||
+                other.contentType == contentType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, content, createdAt,
-      updatedAt, isLocked, colorHex);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      title,
+      content,
+      createdAt,
+      updatedAt,
+      isLocked,
+      colorHex,
+      isPinned,
+      isDeleted,
+      deletedAt,
+      const DeepCollectionEquality().hash(_tags),
+      isChecklist,
+      const DeepCollectionEquality().hash(_checklistItems),
+      reminderAt,
+      contentType);
 
   @JsonKey(ignore: true)
   @override
@@ -254,7 +434,15 @@ abstract class _Note implements Note {
       required final DateTime createdAt,
       required final DateTime updatedAt,
       final bool isLocked,
-      final String colorHex}) = _$NoteImpl;
+      final String colorHex,
+      final bool isPinned,
+      final bool isDeleted,
+      final DateTime? deletedAt,
+      final List<String> tags,
+      final bool isChecklist,
+      final List<ChecklistItem> checklistItems,
+      final DateTime? reminderAt,
+      final String contentType}) = _$NoteImpl;
 
   factory _Note.fromJson(Map<String, dynamic> json) = _$NoteImpl.fromJson;
 
@@ -272,6 +460,22 @@ abstract class _Note implements Note {
   bool get isLocked;
   @override // Hex string for color
   String get colorHex;
+  @override // New feature fields
+  bool get isPinned;
+  @override
+  bool get isDeleted;
+  @override
+  DateTime? get deletedAt;
+  @override
+  List<String> get tags;
+  @override
+  bool get isChecklist;
+  @override
+  List<ChecklistItem> get checklistItems;
+  @override
+  DateTime? get reminderAt;
+  @override
+  String get contentType;
   @override
   @JsonKey(ignore: true)
   _$$NoteImplCopyWith<_$NoteImpl> get copyWith =>

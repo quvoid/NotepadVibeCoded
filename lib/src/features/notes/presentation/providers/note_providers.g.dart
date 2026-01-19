@@ -108,7 +108,7 @@ final searchNotesProvider = AutoDisposeProvider<SearchNotes>.internal(
 );
 
 typedef SearchNotesRef = AutoDisposeProviderRef<SearchNotes>;
-String _$notesListHash() => r'9d1132a387bd9fe3f0f7c2789cd9d2e1ff65d5ae';
+String _$notesListHash() => r'0229101dceb6b5ee7ff89362c6f484ced271e1da';
 
 /// See also [notesList].
 @ProviderFor(notesList)
@@ -122,6 +122,34 @@ final notesListProvider = AutoDisposeStreamProvider<List<Note>>.internal(
 );
 
 typedef NotesListRef = AutoDisposeStreamProviderRef<List<Note>>;
+String _$trashedNotesHash() => r'4f939108541f9556d4103cd647006452ca0f14b5';
+
+/// See also [trashedNotes].
+@ProviderFor(trashedNotes)
+final trashedNotesProvider = AutoDisposeStreamProvider<List<Note>>.internal(
+  trashedNotes,
+  name: r'trashedNotesProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$trashedNotesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef TrashedNotesRef = AutoDisposeStreamProviderRef<List<Note>>;
+String _$emptyTrashHash() => r'9ee97802ecacbf530ef7753e8556d5199061bf68';
+
+/// See also [emptyTrash].
+@ProviderFor(emptyTrash)
+final emptyTrashProvider = AutoDisposeFutureProvider<void>.internal(
+  emptyTrash,
+  name: r'emptyTrashProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$emptyTrashHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef EmptyTrashRef = AutoDisposeFutureProviderRef<void>;
 String _$searchQueryHash() => r'3c36752ee11b18a9f1e545eb1a7209a7222d91c9';
 
 /// See also [SearchQuery].
@@ -137,5 +165,20 @@ final searchQueryProvider =
 );
 
 typedef _$SearchQuery = AutoDisposeNotifier<String>;
+String _$tagFilterHash() => r'a11be8c402a8f71d4ec13f99274a553d2c06eac6';
+
+/// See also [TagFilter].
+@ProviderFor(TagFilter)
+final tagFilterProvider =
+    AutoDisposeNotifierProvider<TagFilter, String?>.internal(
+  TagFilter.new,
+  name: r'tagFilterProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$tagFilterHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$TagFilter = AutoDisposeNotifier<String?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -22,4 +22,25 @@ class NoteModel {
   bool isLocked = false;
 
   late String colorHex;
+
+  // New feature fields
+  @Index()
+  bool isPinned = false;
+
+  @Index()
+  bool isDeleted = false;
+
+  DateTime? deletedAt;
+
+  // Store tags as JSON string (Isar doesn't support List<String> directly)
+  String tagsJson = '[]';
+
+  bool isChecklist = false;
+
+  // Store checklist items as JSON string
+  String checklistItemsJson = '[]';
+
+  DateTime? reminderAt;
+
+  String contentType = 'plain'; // 'plain' or 'quill'
 }

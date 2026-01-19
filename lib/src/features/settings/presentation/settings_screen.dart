@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dart_vader_notes/src/core/theme/theme_provider.dart';
 import 'package:dart_vader_notes/src/features/settings/data/pin_service.dart';
+import 'package:dart_vader_notes/src/core/services/language_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -29,6 +30,8 @@ class SettingsScreen extends ConsumerWidget {
               themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
             ),
           ),
+          const Divider(),
+          _LanguageSettingsTile(),
           const Divider(),
           _PinSettingsTile(), // Extracted widget for clearer code
           const Divider(),
@@ -112,6 +115,68 @@ class _PinSettingsTileState extends ConsumerState<_PinSettingsTile> {
           _showSetPinDialog(pinService);
         }
       },
+    );
+  }
+}
+
+class _LanguageSettingsTile extends ConsumerWidget {
+  const _LanguageSettingsTile();
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
+    final currentLanguage = ref.read(languageProvider);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select TTS Language'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('English'),
+              subtitle: const Text('en-US'),
+              value: kLanguageEnglish,
+              groupValue: currentLanguage,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(languageProvider.notifier).setLanguage(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Hindi'),
+              subtitle: const Text('hi-IN'),
+              value: kLanguageHindi,
+              groupValue: currentLanguage,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(languageProvider.notifier).setLanguage(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final languageName = ref.watch(languageProvider.notifier).languageName;
+
+    return ListTile(
+      title: const Text('TTS Language'),
+      subtitle: Text('Current: $languageName'),
+      leading: const Icon(Icons.language),
+      onTap: () => _showLanguageDialog(context, ref),
     );
   }
 }

@@ -59,18 +59,80 @@ class SearchQuery extends _$SearchQuery {
 }
 
 @riverpod
+class TagFilter extends _$TagFilter {
+  @override
+  String? build() => null;
+
+  void setTag(String? tag) => state = tag;
+}
+
+@riverpod
 Stream<List<Note>> notesList(NotesListRef ref) {
   final getNotes = ref.watch(getNotesProvider);
   final searchQuery = ref.watch(searchQueryProvider);
   final searchNotes = ref.watch(searchNotesProvider);
+  final tagFilter = ref.watch(tagFilterProvider);
   
   // If search query is empty, watch all notes
   if (searchQuery.isEmpty) {
-    return getNotes.call();
+    return getNotes.call().map((notes) {
+      // Filter out deleted notes
+      var filtered = notes.where((note) => !note.isDeleted).toList();
+      
+      // Filter by tag if selected
+      if (tagFilter != null) {
+        filtered = filtered.where((note) => note.tags.contains(tagFilter)).toList();
+      }
+      
+      // Sort: pinned notes first, then by updated time
+      filtered.sort((a, b) {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return b.updatedAt.compareTo(a.updatedAt);
+      });
+      
+      return filtered;
+    });
   } 
   
   // If search query is not empty, we need to return a Stream that emits the search results.
   // Converting Future to Stream for search results.
   return Stream.fromFuture(searchNotes.call(searchQuery))
-      .map((either) => either.fold((l) => [], (r) => r));
+      .map((either) => either.fold(
+        (l) => [],
+        (r) {
+          // Filter out deleted notes and apply tag filter
+          var filtered = r.where((note) => !note.isDeleted).toList();
+          if (tagFilter != null) {
+            filtered = filtered.where((note) => note.tags.contains(tagFilter)).toList();
+          }
+          return filtered;
+        },
+      ));
+}
+
+@riverpod
+Stream<List<Note>> trashedNotes(TrashedNotesRef ref) {
+  final getNotes = ref.watch(getNotesProvider);
+  
+  return getNotes.call().map((notes) {
+    return notes.where((note) => note.isDeleted).toList()
+      ..sort((a, b) => (b.deletedAt ?? b.updatedAt).compareTo(a.deletedAt ?? a.updatedAt));
+  });
+}
+
+@riverpod
+Future<void> emptyTrash(EmptyTrashRef ref) async {
+  final repository = ref.watch(noteRepositoryProvider);
+  final result = await repository.getNotes();
+  
+  await result.fold(
+    (failure) async {},
+    (notes) async {
+      final trashedNotes = notes.where((note) => note.isDeleted);
+      for (final note in trashedNotes) {
+        await ref.read(deleteNoteProvider).call(note.id);
+      }
+    },
+  );
 }
