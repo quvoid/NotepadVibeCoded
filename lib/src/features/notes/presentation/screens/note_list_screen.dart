@@ -23,221 +23,238 @@ class NoteListScreen extends ConsumerWidget {
     final selectedTag = ref.watch(tagFilterProvider);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.center,
-            colors: [
-              AppConstants.spaceBlack,
-              AppConstants.deepPurple,
-              Theme.of(context).scaffoldBackgroundColor,
-            ],
-            stops: const [0.0, 0.3, 0.6],
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background.jpg',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // Return generic space background or empty container if image missing
+                return Container(color: AppConstants.spaceBlack); 
+              },
+            ),
           ),
-        ),
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar.large(
-              expandedHeight: 120,
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              flexibleSpace: FlexibleSpaceBar(
-                title: ShaderMask(
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [
-                      AppConstants.lightsaberGlow,
-                      AppConstants.sithRed,
-                    ],
-                  ).createShader(bounds),
-                  child: Text(
-                    AppConstants.appName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      letterSpacing: 1.2,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          color: AppConstants.sithRed.withValues(alpha: 0.5),
-                          blurRadius: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                centerTitle: false,
-              ),
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.delete_outline, color: AppConstants.lightsaberGlow),
-                  tooltip: 'Trash',
-                  onPressed: () => context.push('/trash'),
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings, color: AppConstants.lightsaberGlow),
-                  onPressed: () => context.push('/settings'),
-                ),
-              ],
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
-              sliver: SliverToBoxAdapter(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppConstants.lightsaberGlow.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: SearchBar(
-                    hintText: 'Search notes...',
-                    leading: Icon(Icons.search, color: AppConstants.lightsaberGlow),
-                    backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                    elevation: WidgetStateProperty.all(0),
-                    onChanged: (value) {
-                      ref.read(searchQueryProvider.notifier).setQuery(value);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          const SliverToBoxAdapter(child: SizedBox(height: AppConstants.p12)),
           
-          // Tag filter chips
-          notesAsync.when(
-            data: (notes) {
-              // Collect all unique tags
-              final allTags = <String>{};
-              for (final note in notes) {
-                allTags.addAll(note.tags);
-              }
-              
-              if (allTags.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
-              
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          if (selectedTag != null)
-                            FilterChip(
-                              label: const Text('All'),
-                              selected: false,
-                              onSelected: (_) => ref.read(tagFilterProvider.notifier).setTag(null),
+          // Gradient Overlay
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.center,
+                colors: [
+                  AppConstants.spaceBlack.withValues(alpha: 0.8),
+                  AppConstants.deepPurple.withValues(alpha: 0.6),
+                  Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.9),
+                ],
+                stops: const [0.0, 0.3, 0.6],
+              ),
+            ),
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar.large(
+                  expandedHeight: 120,
+                  floating: false,
+                  pinned: true,
+                  backgroundColor: Colors.transparent,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [
+                          AppConstants.lightsaberGlow,
+                          AppConstants.sithRed,
+                        ],
+                      ).createShader(bounds),
+                      child: Text(
+                        AppConstants.appName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                          letterSpacing: 1.2,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              color: AppConstants.sithRed.withValues(alpha: 0.5),
+                              blurRadius: 20,
                             ),
-                          ...allTags.map((tag) {
-                            return FilterChip(
-                              label: Text(tag),
-                              selected: selectedTag == tag,
-                              onSelected: (selected) {
-                                ref.read(tagFilterProvider.notifier).setTag(selected ? tag : null);
-                              },
-                            );
-                          }),
+                          ],
+                        ),
+                      ),
+                    ),
+                    centerTitle: false,
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.delete_outline, color: AppConstants.lightsaberGlow),
+                      tooltip: 'Trash',
+                      onPressed: () => context.push('/trash'),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings, color: AppConstants.lightsaberGlow),
+                      onPressed: () => context.push('/settings'),
+                    ),
+                  ],
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
+                  sliver: SliverToBoxAdapter(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppConstants.lightsaberGlow.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: SearchBar(
+                        hintText: 'Search notes...',
+                        leading: Icon(Icons.search, color: AppConstants.lightsaberGlow),
+                        backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                        elevation: WidgetStateProperty.all(0),
+                        onChanged: (value) {
+                          ref.read(searchQueryProvider.notifier).setQuery(value);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: AppConstants.p12)),
+              
+              // Tag filter chips
+              notesAsync.when(
+                data: (notes) {
+                  // Collect all unique tags
+                  final allTags = <String>{};
+                  for (final note in notes) {
+                    allTags.addAll(note.tags);
+                  }
+                  
+                  if (allTags.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+                  
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              if (selectedTag != null)
+                                FilterChip(
+                                  label: const Text('All'),
+                                  selected: false,
+                                  onSelected: (_) => ref.read(tagFilterProvider.notifier).setTag(null),
+                                ),
+                              ...allTags.map((tag) {
+                                return FilterChip(
+                                  label: Text(tag),
+                                  selected: selectedTag == tag,
+                                  onSelected: (selected) {
+                                    ref.read(tagFilterProvider.notifier).setTag(selected ? tag : null);
+                                  },
+                                );
+                              }),
+                            ],
+                          ),
+                          const SizedBox(height: AppConstants.p12),
                         ],
                       ),
-                      const SizedBox(height: AppConstants.p12),
-                    ],
-                  ),
+                    ),
+                  );
+                },
+                error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+                loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+              ),
+              
+              const SliverToBoxAdapter(child: SizedBox(height: AppConstants.p4)),
+              notesAsync.when(
+                data: (notes) {
+                  if (notes.isEmpty) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.note_add_outlined,
+                              size: 120,
+                              color: AppConstants.lightsaberGlow.withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(height: 24),
+                            ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                colors: [
+                                  AppConstants.lightsaberGlow,
+                                  AppConstants.sithRed.withValues(alpha: 0.7),
+                                ],
+                              ).createShader(bounds),
+                              child: Text(
+                                VaderQuotes.getRandomQuote(),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Tap the + button to create your first note',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppConstants.lightsaberGlow.withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
+                    sliver: SliverMasonryGrid.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: AppConstants.p12,
+                      crossAxisSpacing: AppConstants.p12,
+                      childCount: notes.length,
+                      itemBuilder: (context, index) {
+                        final note = notes[index];
+                        return NoteCard(note: note);
+                      },
+                    ),
+                  );
+                },
+                error: (error, st) => SliverFillRemaining(
+                  child: Center(child: Text('Error: $error')),
                 ),
-              );
-            },
-            error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
-            loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-          ),
-          
-          const SliverToBoxAdapter(child: SizedBox(height: AppConstants.p4)),
-          notesAsync.when(
-            data: (notes) {
-              if (notes.isEmpty) {
-                return SliverFillRemaining(
+                loading: () => const SliverFillRemaining(
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.note_add_outlined,
-                          size: 120,
-                          color: AppConstants.lightsaberGlow.withValues(alpha: 0.3),
+                        SizedBox(
+                          width: 200,
+                          child: LightsaberProgress(color: Colors.blue),
                         ),
-                        const SizedBox(height: 24),
-                        ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              AppConstants.lightsaberGlow,
-                              AppConstants.sithRed.withValues(alpha: 0.7),
-                            ],
-                          ).createShader(bounds),
-                          child: Text(
-                            VaderQuotes.getRandomQuote(),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Tap the + button to create your first note',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppConstants.lightsaberGlow.withValues(alpha: 0.6),
-                          ),
-                        ),
+                        SizedBox(height: 16),
+                        Text('Loading...', style: TextStyle(color: Colors.white)),
                       ],
                     ),
                   ),
-                );
-              }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppConstants.p16),
-                sliver: SliverMasonryGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: AppConstants.p12,
-                  crossAxisSpacing: AppConstants.p12,
-                  childCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final note = notes[index];
-                    return NoteCard(note: note);
-                  },
-                ),
-              );
-            },
-            error: (error, st) => SliverFillRemaining(
-              child: Center(child: Text('Error: $error')),
-            ),
-            loading: () => const SliverFillRemaining(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 200,
-                      child: LightsaberProgress(color: Colors.blue),
-                    ),
-                    SizedBox(height: 16),
-                    Text('Loading...', style: TextStyle(color: Colors.white)),
-                  ],
                 ),
               ),
-            ),
+              const SliverToBoxAdapter(child: SizedBox(height: 80)), // Bottom padding for FAB
+            ],
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 80)), // Bottom padding for FAB
+        ),
         ],
       ),
-    ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -16,6 +16,7 @@ import 'package:dart_vader_notes/src/features/notes/presentation/widgets/reminde
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/note_stats_card.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/checklist_editor.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/voice_recorder_sheet.dart';
+import 'package:dart_vader_notes/src/core/services/translation_service.dart';
 import 'package:dart_vader_notes/src/features/settings/data/pin_service.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
@@ -286,6 +287,84 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             tooltip: 'Voice read',
             onPressed: () => setState(() => _showTtsControls = !_showTtsControls),
           ),
+          // Translate
+          IconButton(
+            icon: const Icon(Icons.translate),
+            tooltip: 'Translate to Hindi',
+            onPressed: () async {
+              final text = _contentController.text;
+              if (text.isEmpty) return;
+
+              // Show loading
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Translating...'), duration: Duration(milliseconds: 500)),
+              );
+
+              try {
+                // Remove spaces to check if it's just whitespace
+                if (text.trim().isEmpty) return;
+
+                final translated = await ref.read(translationServiceProvider).translateToHindi(text);
+                
+                if (mounted) {
+                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                   
+                   // Show confirmation dialog logic
+                   showDialog(
+                     context: context,
+                     builder: (context) => AlertDialog(
+                       title: const Text('Translation Result'),
+                       content: SingleChildScrollView(
+                         child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             const Text('Original:', style: TextStyle(fontWeight: FontWeight.bold)),
+                             Text(text, style: const TextStyle(color: Colors.grey)),
+                             const SizedBox(height: 16),
+                             const Text('Translated (Hindi):', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                             Text(translated, style: const TextStyle(fontSize: 18)),
+                             if (text == translated) ...[
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Warning: Result is same as original. Try writing simpler sentences.',
+                                  style: TextStyle(color: Colors.orange, fontSize: 12),
+                                ),
+                             ],
+                           ],
+                         ),
+                       ),
+                       actions: [
+                         TextButton(
+                           onPressed: () => Navigator.pop(context),
+                           child: const Text('Cancel'),
+                         ),
+                         FilledButton(
+                           onPressed: () {
+                             setState(() {
+                               _contentController.text = translated;
+                             });
+                             Navigator.pop(context);
+                           },
+                           child: const Text('Apply'),
+                         ),
+                       ],
+                     ),
+                   );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString().replaceAll("Exception: ", "")}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+          // Voice Record
           // Voice Record
           IconButton(
             icon: const Icon(Icons.mic),

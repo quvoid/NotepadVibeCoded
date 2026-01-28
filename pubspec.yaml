@@ -58,6 +58,7 @@ dependencies:
   audioplayers: ^6.0.0             # Sound effects
   speech_to_text: ^7.0.0           # Voice recording
   home_widget: ^0.7.0              # Home screen widgets
+  translator: ^1.0.0               # Translation
 
 dev_dependencies:
   flutter_test:
@@ -91,6 +92,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icons/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

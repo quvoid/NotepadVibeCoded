@@ -36,6 +36,16 @@ class TtsService {
 
   Future<void> speak(String text) async {
     if (text.isEmpty) return;
+
+    // Check if text contains Devanagari characters (Hindi)
+    final hasHindi = RegExp(r'[\u0900-\u097F]').hasMatch(text);
+    if (hasHindi) {
+      await _flutterTts.setLanguage('hi-IN');
+    } else {
+      // Default to English (or whatever was set initially)
+      // Ideally we should track the 'default' language
+      await _flutterTts.setLanguage('en-US');
+    }
     
     if (_isPaused) {
       // Resume if paused
