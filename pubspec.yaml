@@ -60,6 +60,7 @@ dependencies:
   home_widget: ^0.7.0              # Home screen widgets
   translator: ^1.0.0               # Translation
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -34,15 +34,31 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      scaffoldBackgroundColor: AppConstants.spaceBlack,
+      cardColor: AppConstants.imperialGray,
+      fontFamily: GoogleFonts.exo2().fontFamily,
+      
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.deepPurple,
         brightness: Brightness.dark,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.exo2TextTheme(ThemeData.dark().textTheme).copyWith(
+        displayLarge: GoogleFonts.orbitron(
+           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white,
+        ),
+        headlineMedium: GoogleFonts.orbitron(
+           fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,
+        ),
+        titleMedium: GoogleFonts.orbitron(
+           fontWeight: FontWeight.w600,
+           letterSpacing: 0.5,
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent, 
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -50,9 +66,6 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppConstants.p16),
           side: const BorderSide(color: Colors.white10),
         ),
-      ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        elevation: 2,
       ),
     );
   }

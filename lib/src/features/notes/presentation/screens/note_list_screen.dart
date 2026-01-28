@@ -13,6 +13,8 @@ import 'package:dart_vader_notes/src/core/services/sound_service.dart';
 import 'package:dart_vader_notes/src/core/utils/vader_quotes.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:dart_vader_notes/src/features/notes/presentation/widgets/starfield_widget.dart';
+import 'package:dart_vader_notes/src/features/notes/presentation/widgets/animated_border_container.dart';
 
 class NoteListScreen extends ConsumerWidget {
   const NoteListScreen({super.key});
@@ -26,15 +28,9 @@ class NoteListScreen extends ConsumerWidget {
       body: Stack(
         children: [
           // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                // Return generic space background or empty container if image missing
-                return Container(color: AppConstants.spaceBlack); 
-              },
-            ),
+          // Background Starfield
+          const Positioned.fill(
+            child: StarfieldWidget(),
           ),
           
           // Gradient Overlay
@@ -349,132 +345,170 @@ class NoteCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final color = Color(int.parse(note.colorHex));
     final isDark = color.computeLuminance() < 0.5;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final contentColor = isDark ? Colors.white70 : Colors.black54;
+    final textColor = Colors.white; // Force white text for space theme
+    final contentColor = Colors.white70;
 
-    return Card(
-      color: color,
-      clipBehavior: Clip.antiAlias,
-      elevation: 4,
-      shadowColor: AppConstants.sithRed.withValues(alpha: 0.2),
-      child: InkWell(
-        onTap: () => _handleTap(context, ref),
-        child: Stack(
-          children: [
-             Padding(
-              padding: const EdgeInsets.all(AppConstants.p16),
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(
-                  sigmaX: note.isLocked ? 5 : 0,
-                  sigmaY: note.isLocked ? 5 : 0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Pin indicator
-                    if (note.isPinned)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Icon(
-                          Icons.push_pin,
-                          size: 16,
-                          color: textColor.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    if (note.title.isNotEmpty) ...[
-                      Text(
-                        note.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: AppConstants.p8),
-                    ],
-                    Text(
-                      note.isLocked ? 'This note is private.\nUnlocked with PIN.' : note.content,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: contentColor,
-                          ),
-                      maxLines: 8,
-                      overflow: TextOverflow.ellipsis,
+    return AnimatedBorderContainer(
+      borderWidth: 1.5,
+      gradientColors: [
+        note.isLocked ? AppConstants.sithRed : AppConstants.lightsaberGlow,
+        color.withValues(alpha: 0.1),
+        note.isLocked ? AppConstants.sithRed : AppConstants.lightsaberGlow,
+      ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // The Glass Blur
+        child: Container(
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15), // Very transparent
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.transparent, // Handled by AnimatedBorderContainer
+              width: 0,
+            ),
+            boxShadow: [
+              // Neon Glow
+              BoxShadow(
+                color: (note.isLocked ? AppConstants.sithRed : AppConstants.lightsaberGlow).withValues(alpha: 0.2),
+                blurRadius: 20,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: InkWell(
+            onTap: () => _handleTap(context, ref),
+            child: Stack(
+              children: [
+                 Padding(
+                  padding: const EdgeInsets.all(AppConstants.p16),
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(
+                      sigmaX: note.isLocked ? 6 : 0,
+                      sigmaY: note.isLocked ? 6 : 0,
                     ),
-                    const SizedBox(height: AppConstants.p12),
-                    
-                    // Tags
-                    if (note.tags.isNotEmpty) ...[
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: note.tags.take(3).map((tag) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Pin indicator
+                        if (note.isPinned)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Icon(
+                              Icons.push_pin,
+                              size: 16,
+                              color: AppConstants.lightsaberGlow,
+                              shadows: [
+                                BoxShadow(color: AppConstants.lightsaberGlow, blurRadius: 10, spreadRadius: 2),
+                              ],
                             ),
-                            child: Text(
-                              tag,
+                          ),
+                        if (note.title.isNotEmpty) ...[
+                          Text(
+                            note.title,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                  shadows: [
+                                     Shadow(color: color.withValues(alpha: 0.6), blurRadius: 10),
+                                  ],
+                                ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: AppConstants.p8),
+                        ],
+                        Text(
+                          note.isLocked ? 'Encrypted Transmission.\nAuth Required.' : note.content,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: contentColor,
+                              ),
+                          maxLines: 8,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppConstants.p12),
+                        
+                        // Tags
+                        if (note.tags.isNotEmpty) ...[
+                          Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: note.tags.take(3).map((tag) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: Text(
+                                  '#$tag',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: textColor.withValues(alpha: 0.8),
+                                      ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: AppConstants.p8),
+                        ],
+                        
+                        Row(
+                          children: [
+                            Text(
+                              DateFormat.MMMd().format(note.updatedAt),
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: textColor,
+                                    color: contentColor.withValues(alpha: 0.5),
                                   ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: AppConstants.p8),
-                    ],
-                    
-                    Row(
-                      children: [
-                        Text(
-                          DateFormat.MMMd().format(note.updatedAt),
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: contentColor.withValues(alpha: 0.6),
+                            if (note.reminderAt != null) ...[
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.alarm,
+                                size: 14,
+                                color: AppConstants.sithRed.withValues(alpha: 0.8),
                               ),
+                            ],
+                            if (note.isChecklist) ...[
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.checklist,
+                                size: 14,
+                                color: AppConstants.lightsaberGlow.withValues(alpha: 0.8),
+                              ),
+                            ],
+                          ],
                         ),
-                        if (note.reminderAt != null) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.alarm,
-                            size: 14,
-                            color: contentColor.withValues(alpha: 0.6),
-                          ),
-                        ],
-                        if (note.isChecklist) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.checklist,
-                            size: 14,
-                            color: contentColor.withValues(alpha: 0.6),
-                          ),
-                        ],
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-            if (note.isLocked)
-              Positioned.fill(
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Icon(Icons.lock, color: Colors.white, size: 32),
                   ),
                 ),
-              ),
-          ],
+                if (note.isLocked)
+                  Positioned.fill(
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppConstants.sithRed, width: 2),
+                          boxShadow: [
+                             BoxShadow(color: AppConstants.sithRed.withValues(alpha: 0.5), blurRadius: 20),
+                          ],
+                        ),
+                        child: Icon(Icons.lock, color: AppConstants.sithRed, size: 32),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
+    ),
     ).animate()
-      .fadeIn(duration: 300.ms, curve: Curves.easeOut)
-      .slideY(begin: 0.2, end: 0, duration: 300.ms, curve: Curves.easeOut);
+      .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+      .slideY(begin: 0.2, end: 0, duration: 400.ms, curve: Curves.easeOut)
+      .shimmer(delay: 500.ms, duration: 1000.ms, color: Colors.white10);
   }
 }
