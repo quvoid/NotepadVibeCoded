@@ -7,7 +7,10 @@ import 'package:dart_vader_notes/src/core/utils/constants.dart';
 import 'package:dart_vader_notes/src/features/notes/domain/entities/note.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/providers/note_providers.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/quick_note_sheet.dart';
+import 'package:dart_vader_notes/src/features/notes/presentation/widgets/lightsaber_progress.dart';
 import 'package:dart_vader_notes/src/features/settings/data/pin_service.dart';
+import 'package:dart_vader_notes/src/core/services/sound_service.dart';
+import 'package:dart_vader_notes/src/core/utils/vader_quotes.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -174,12 +177,14 @@ class NoteListScreen extends ConsumerWidget {
                               AppConstants.sithRed.withValues(alpha: 0.7),
                             ],
                           ).createShader(bounds),
-                          child: const Text(
-                            'No notes yet',
-                            style: TextStyle(
-                              fontSize: 24,
+                          child: Text(
+                            VaderQuotes.getRandomQuote(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ),
@@ -214,7 +219,19 @@ class NoteListScreen extends ConsumerWidget {
               child: Center(child: Text('Error: $error')),
             ),
             loading: () => const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: LightsaberProgress(color: Colors.blue),
+                    ),
+                    SizedBox(height: 16),
+                    Text('Loading...', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 80)), // Bottom padding for FAB

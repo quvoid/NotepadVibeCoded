@@ -6,6 +6,7 @@ import 'package:dart_vader_notes/src/core/utils/constants.dart';
 import 'package:dart_vader_notes/src/core/services/tts_service.dart';
 import 'package:dart_vader_notes/src/core/services/share_service.dart';
 import 'package:dart_vader_notes/src/core/services/notification_service.dart';
+import 'package:dart_vader_notes/src/core/services/sound_service.dart';
 import 'package:dart_vader_notes/src/features/notes/domain/entities/note.dart';
 import 'package:dart_vader_notes/src/features/notes/domain/entities/checklist_item.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/providers/note_providers.dart';
@@ -14,6 +15,7 @@ import 'package:dart_vader_notes/src/features/notes/presentation/widgets/tag_sel
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/reminder_picker.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/note_stats_card.dart';
 import 'package:dart_vader_notes/src/features/notes/presentation/widgets/checklist_editor.dart';
+import 'package:dart_vader_notes/src/features/notes/presentation/widgets/voice_recorder_sheet.dart';
 import 'package:dart_vader_notes/src/features/settings/data/pin_service.dart';
 
 class NoteDetailScreen extends ConsumerStatefulWidget {
@@ -112,12 +114,19 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     
     // Schedule reminder if set
     if (_reminderAt != null) {
-      await ref.read(notificationServiceProvider).scheduleReminder(note);
+      ref.read(notificationServiceProvider).scheduleReminder(note);
     }
+    
+    // Play sound logic only if manual save (not auto-save on dispose)
+    // We can check this by context availability or just play it.
+    // However, _saveNote is called in dispose, which might cause issues.
+    // We'll leave it simple for now or check mounted in caller.
   }
 
   Future<void> _deleteNote() async {
     if (_existingNote == null) return;
+    
+    await ref.read(soundServiceProvider).playClash(); // Play destructive sound
     
     // Soft delete
     final deletedNote = _existingNote!.copyWith(
@@ -277,6 +286,34 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             tooltip: 'Voice read',
             onPressed: () => setState(() => _showTtsControls = !_showTtsControls),
           ),
+          // Voice Record
+          IconButton(
+            icon: const Icon(Icons.mic),
+            tooltip: 'Voice Note',
+            onPressed: () async {
+              final result = await showModalBottomSheet<String>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const VoiceRecorderSheet(),
+              );
+              if (result != null && result.isNotEmpty) {
+                 // Append text
+                 final currentSelection = _contentController.selection;
+                 if (currentSelection.isValid) {
+                     final text = _contentController.text;
+                     final newText = text.replaceRange(
+                       currentSelection.start, 
+                       currentSelection.end, 
+                       " $result"
+                     );
+                     _contentController.text = newText;
+                 } else {
+                     _contentController.text += " $result";
+                 }
+              }
+            },
+          ),
           // Checklist toggle
           IconButton(
             icon: Icon(_isChecklist ? Icons.checklist : Icons.checklist_outlined),
@@ -293,34 +330,39 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             icon: const Icon(Icons.delete_outline),
             onPressed: _deleteNote,
           ),
-          const SizedBox(width: 8),
+
         ],
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const Text('Private', style: TextStyle(fontSize: 16)),
-            Switch(
-              value: _isLocked,
-              onChanged: (val) {
-                if (val) {
-                   final pinService = ref.read(pinServiceProvider);
-                   if (!pinService.hasPin) {
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(
-                         content: const Text('Please set a PIN in Settings first'),
-                         action: SnackBarAction(
-                           label: 'Settings',
-                           onPressed: () => context.push('/settings'),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Text('Private', style: TextStyle(fontSize: 16)),
+              Switch(
+                value: _isLocked,
+                onChanged: (val) {
+                  if (val) {
+                     ref.read(soundServiceProvider).playLightsaberOn();
+                     final pinService = ref.read(pinServiceProvider);
+                     if (!pinService.hasPin) {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(
+                           content: const Text('Please set a PIN in Settings first'),
+                           action: SnackBarAction(
+                             label: 'Settings',
+                             onPressed: () => context.push('/settings'),
+                           ),
                          ),
-                       ),
-                     );
-                     return;
-                   }
-                }
-                setState(() => _isLocked = val);
-              },
-            ),
-          ],
+                       );
+                       return;
+                     }
+                  }
+                  setState(() => _isLocked = val);
+                  if (!val) ref.read(soundServiceProvider).playLightsaberOff();
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: SafeArea(
@@ -388,8 +430,9 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _saveNote();
+        onPressed: () async {
+          await ref.read(soundServiceProvider).playLightsaberOn(); // Play save sound
+          await _saveNote();
           if (mounted) {
              ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Note Saved'), duration: Duration(seconds: 1)),

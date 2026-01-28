@@ -55,6 +55,9 @@ dependencies:
   share_plus: ^10.1.4              # Share functionality
   flutter_quill: ^11.5.0           # Rich text editor
   timezone: ^0.10.0                # For scheduling notifications
+  audioplayers: ^6.0.0             # Sound effects
+  speech_to_text: ^7.0.0           # Voice recording
+  home_widget: ^0.7.0              # Home screen widgets
 
 dev_dependencies:
   flutter_test:
